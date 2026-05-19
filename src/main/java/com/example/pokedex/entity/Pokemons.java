@@ -1,7 +1,7 @@
 package com.example.pokedex.entity;
 
 
-import com.example.pokedex.dto.PokemonDto;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;

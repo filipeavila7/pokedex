@@ -111,6 +111,7 @@ public class PokemonService {
     // resposta personalizada
     PokemonResponse toResponse(Pokemons p){
         return new PokemonResponse(
+                p.getId(),
                 p.getName(),
                 p.getPokemonNumber(),
                 p.getUrlImgPokemon(),
@@ -120,6 +121,7 @@ public class PokemonService {
 
     TypeResponse toTypeResponse(Pokemons p, Set<Type> weakeness){
         return new TypeResponse(
+                p.getId(),
                 p.getName(),
                 p.getPokemonNumber(),
                 p.getUrlImgPokemon(),

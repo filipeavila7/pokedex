@@ -5,6 +5,7 @@ import com.example.pokedex.entity.Type;
 import java.util.Set;
 
 public record TypeResponse(
+        Long id,
         String name,
         Long number,
         String urlImg,
