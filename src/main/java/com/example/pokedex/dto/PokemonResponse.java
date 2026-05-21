@@ -8,7 +8,7 @@ public record PokemonResponse(
         Long id,
         String name,
         Long number,
-        String ulrImg,
+        String urlImg,
         Set<Type> types
 ) {
 }

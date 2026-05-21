@@ -31,21 +31,20 @@ public class SecurityConfig {
 
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {}) // 🔥 ISSO AQUI É O QUE FALTA
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // libera GET
+                        .requestMatchers("/auth/**").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/pokemons/**").permitAll()
 
-                        // bloqueia POST, PUT, DELETE (exigem autenticação)
                         .requestMatchers(HttpMethod.POST, "/pokemons/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/pokemons/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/pokemons/**").hasRole("ADMIN")
-
-                        // outras regras
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/users/**").hasRole("ADMIN")
-                        .requestMatchers("/upload/**").hasRole("ADMIN")
+                        .requestMatchers("/upload/**").permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

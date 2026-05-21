@@ -6,6 +6,7 @@ import com.example.pokedex.dto.TypeResponse;
 import com.example.pokedex.entity.Pokemons;
 import com.example.pokedex.entity.Type;
 import com.example.pokedex.repository.PokemonRepository;
+import com.example.pokedex.utils.FileUrlUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -114,7 +115,7 @@ public class PokemonService {
                 p.getId(),
                 p.getName(),
                 p.getPokemonNumber(),
-                p.getUrlImgPokemon(),
+                FileUrlUtils.toPublicUrl(p.getUrlImgPokemon()),
                 p.getTypes()
         );
     }
@@ -124,7 +125,7 @@ public class PokemonService {
                 p.getId(),
                 p.getName(),
                 p.getPokemonNumber(),
-                p.getUrlImgPokemon(),
+                FileUrlUtils.toPublicUrl(p.getUrlImgPokemon()),
                 p.getTypes(),
                 weakeness
         );
