@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/pokemons")
 @AllArgsConstructor
@@ -32,6 +34,21 @@ public class PokemonController {
     public ResponseEntity<Page<PokemonResponse>> getAllPokemons(@RequestParam(defaultValue = "0") int page){
         return ResponseEntity.ok(service.getAllPokemons(page));
     }
+
+    // rota de pesquisa por nome ou numero
+    @GetMapping("/search")
+    public ResponseEntity<List<PokemonResponse>> search (@RequestParam String pokemon){
+        return ResponseEntity.ok(service.search(pokemon));
+
+    }
+
+    // rota de sugestão apenas de nome
+    @GetMapping("/suggestions")
+    public ResponseEntity<List<PokemonResponse>> suggestions (@RequestParam String pokemon){
+        return ResponseEntity.ok(service.suggestions(pokemon));
+
+    }
+
 
 
     // === PUT ===

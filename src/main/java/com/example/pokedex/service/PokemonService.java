@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -107,6 +108,36 @@ public class PokemonService {
 
         return toTypeResponse(find, weakness);
 
+    }
+
+    // pesquisa de pokemons
+
+    public List<PokemonResponse> search(String p){
+
+        // caso for numero
+        if (p.matches("\\d+")){
+            long number = Long.parseLong(p);
+
+            // tratar o optional e tranformar em lista de pokemon response
+            return repository.findByPokemonNumber(number)
+                    .map(this::toResponse)
+                    .map(List::of)
+                    .orElse(List.of());
+        }
+
+        return repository.findByNameContainingIgnoreCase(p)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    // sugestões
+    public List<PokemonResponse> suggestions (String p){
+        return repository.findByNameStartingWithIgnoreCase(p)
+                .stream()
+                .limit(5)
+                .map(this::toResponse)
+                .toList();
     }
 
     // resposta personalizada
