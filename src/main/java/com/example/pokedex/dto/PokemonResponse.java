@@ -7,7 +7,7 @@ import java.util.Set;
 public record PokemonResponse(
         Long id,
         String name,
-        Long number,
+        String number,
         String urlImg,
         Set<Type> types
 ) {

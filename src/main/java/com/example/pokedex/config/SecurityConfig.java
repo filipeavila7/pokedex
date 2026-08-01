@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/pokemons/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/pokemons/**").hasRole("ADMIN")
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers("/users/**").permitAll()
                         .requestMatchers("/upload/**").permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

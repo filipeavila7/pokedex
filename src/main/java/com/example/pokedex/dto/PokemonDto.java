@@ -13,7 +13,7 @@ public record PokemonDto(
         String name,
 
         @NotNull
-        Long number,
+        String number,
 
         @NotBlank
         String urlImg,

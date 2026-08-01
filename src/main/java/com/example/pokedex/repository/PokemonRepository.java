@@ -10,13 +10,13 @@ import java.util.Optional;
 
 
 public interface PokemonRepository extends JpaRepository<Pokemons, Long> {
-    boolean existsByNameAndPokemonNumber(String name, Long pokemonNumber);
+    boolean existsByNameAndPokemonNumber(String name, String pokemonNumber);
     Pokemons findByName(String name);
 
 
     boolean existsByNameAndPokemonNumberAndIdNot(
             String name,
-            Long pokemonNumber,
+            String pokemonNumber,
             Long id
     );
 

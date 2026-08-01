@@ -26,7 +26,7 @@ public class Pokemons {
     String urlImgPokemon;
 
     @Column(nullable = false, unique = true)
-    Long pokemonNumber;
+    String pokemonNumber;
 
     @ElementCollection
     @Enumerated(EnumType.STRING)

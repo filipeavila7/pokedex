@@ -14,66 +14,81 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+
 /*
+
 Request chega
+
 Pega header Authorization
+
 Extrai token
+
 Extrai email
+
 Busca usuário no banco
+
 Valida token
+
 Cria autenticação
+
 Coloca usuário no Spring Security
+
 Continua request
+
 */
 
-// filtro para pegar o token em cada requisição
 @Component
 @AllArgsConstructor
-public class JwtFilter extends OncePerRequestFilter { // Garante que esse filtro roda 1 vez por request
+public class JwtFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-
-    @Override // metodo que vai rodar em toda requisição
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization"); // pega a header autorization -> onde vai o token
+        String authHeader = request.getHeader("Authorization");
 
-        // Se não tiver token -> libera request, serve para login ou cadastro
+        // 1. Se não tiver header ou não for Bearer, só continua
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        // remover o bearer
+
         String token = authHeader.substring(7);
-        // extrair email do token
-        String email = jwtService.extractEmail(token);
 
-        // Verifica se ainda não está autenticado
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
+            // 2. Extrai email/username do token
+            String email = jwtService.extractEmail(token);
 
-            // busca usuario no banco
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            // 3. Só autentica se ainda não estiver autenticado
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // valida o token
-            if (jwtService.isValid(token, userDetails)) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                // Cria autenticação no Spring
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null, // credentials → null (não precisa senha)
-                                userDetails.getAuthorities()
-                        );
-                // Coloca usuário no contexto do Spring
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                // 4. Valida token
+                if (jwtService.isValid(token, userDetails)) {
+
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
+
+        } catch (Exception e) {
+            // 🔥 IMPORTANTE: nunca quebrar request por token inválido
+            SecurityContextHolder.clearContext();
         }
-        // Libera a request para controller normalmente
+
+        // 5. Continua fluxo normal sempre
         filterChain.doFilter(request, response);
     }
-
 }
