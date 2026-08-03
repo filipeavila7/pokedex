@@ -7,6 +7,8 @@ import com.example.pokedex.service.PokemonService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,15 +33,24 @@ public class PokemonController {
     }
 
     @GetMapping()
-    public ResponseEntity<Page<PokemonResponse>> getAllPokemons(@RequestParam(defaultValue = "0") int page){
-        return ResponseEntity.ok(service.getAllPokemons(page));
+    public ResponseEntity<Page<PokemonResponse>> getAllPokemons(
+            @PageableDefault(size = 12, sort = "pokemonNumber")
+            Pageable pageable){
+        return ResponseEntity.ok(service.getAllPokemons(pageable));
     }
 
     // rota de pesquisa por nome ou numero
     @GetMapping("/search")
-    public ResponseEntity<List<PokemonResponse>> search (@RequestParam String pokemon){
-        return ResponseEntity.ok(service.search(pokemon));
+    public ResponseEntity<Page<PokemonResponse>> search (
+            @RequestParam String pokemon,
+            @PageableDefault(size = 12, sort = "pokemonNumber") Pageable pageable){
+        return ResponseEntity.ok(service.search(pokemon, pageable));
 
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countPokemons() {
+        return ResponseEntity.ok(service.countPokemons());
     }
 
     // rota de sugestão apenas de nome

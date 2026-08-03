@@ -24,6 +24,11 @@ public class PokemonService {
     private final PokemonRepository repository;
     private final TypeEffectivenessService weakService;
 
+    // contar total de pokemons
+    public long countPokemons() {
+        return repository.count();
+    }
+
     public PokemonResponse createPokemon(PokemonDto dto){
         boolean exists = repository.existsByNameAndPokemonNumber(dto.name(), dto.number());
         // caso ja exista
@@ -46,9 +51,7 @@ public class PokemonService {
     }
 
     // get de todos os pokemons retorna uma pagina com 12 pokemons
-    public Page<PokemonResponse> getAllPokemons(int page){
-        Pageable pageable = PageRequest.of(page, 12);
-
+    public Page<PokemonResponse> getAllPokemons(Pageable pageable){
         return repository.findAll(pageable).map(this::toResponse);
     }
 
@@ -106,29 +109,35 @@ public class PokemonService {
 
         Set<Type> weakness = weakService.calculateWeaknesses(pTypes);
 
-        return toTypeResponse(find, weakness);
+        Pokemons previous = repository
+                .findFirstByPokemonNumberLessThanOrderByPokemonNumberDesc(find.getPokemonNumber())
+                .orElse(null);
+
+
+        Pokemons next = repository
+                .findFirstByPokemonNumberGreaterThanOrderByPokemonNumberAsc(find.getPokemonNumber())
+                .orElse(null);
+
+        return toTypeResponse(find, weakness, previous, next);
 
     }
 
     // pesquisa de pokemons
 
-    public List<PokemonResponse> search(String p){
+    public Page<PokemonResponse> search(String p, Pageable pageable){
 
         // caso for numero
         if (p.matches("\\d+")){
-            long number = Long.parseLong(p);
+            String number = String.format("%03d", Integer.parseInt(p));
 
-            // tratar o optional e tranformar em lista de pokemon response
-            return repository.findByPokemonNumber(number)
-                    .map(this::toResponse)
-                    .map(List::of)
-                    .orElse(List.of());
+            return repository.findByPokemonNumber(number, pageable)
+                    .map(this::toResponse);
+
         }
 
-        return repository.findByNameContainingIgnoreCase(p)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return repository.findByNameContainingIgnoreCase(p, pageable)
+                .map(this::toResponse);
+
     }
 
     // sugestões
@@ -151,14 +160,16 @@ public class PokemonService {
         );
     }
 
-    TypeResponse toTypeResponse(Pokemons p, Set<Type> weakeness){
+    TypeResponse toTypeResponse(Pokemons p, Set<Type> weakeness, Pokemons previous, Pokemons next){
         return new TypeResponse(
                 p.getId(),
                 p.getName(),
                 p.getPokemonNumber(),
                 FileUrlUtils.toPublicUrl(p.getUrlImgPokemon()),
                 p.getTypes(),
-                weakeness
+                weakeness,
+                next != null ? toResponse(next) : null,
+                previous != null ? toResponse(previous) : null
         );
     }
 

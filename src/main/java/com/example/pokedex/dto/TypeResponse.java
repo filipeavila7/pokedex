@@ -10,6 +10,8 @@ public record TypeResponse(
         String number,
         String urlImg,
         Set<Type> types,
-        Set<Type> weakness
+        Set<Type> weakness,
+        PokemonResponse next,
+        PokemonResponse previous
 ) {
 }

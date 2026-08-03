@@ -21,12 +21,27 @@ public interface PokemonRepository extends JpaRepository<Pokemons, Long> {
     );
 
 
+    Optional<Pokemons> findFirstByPokemonNumberLessThanOrderByPokemonNumberDesc(
+            String number
+    );
+
+
+    Optional<Pokemons> findFirstByPokemonNumberGreaterThanOrderByPokemonNumberAsc(
+            String number
+    );
+
+
     // Busca pokemons pelo nome
-    List<Pokemons> findByNameContainingIgnoreCase(String name);
+    Page<Pokemons> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     // Sugestões começando pela letra
     List<Pokemons> findByNameStartingWithIgnoreCase(String name);
 
     // Busca exata por número
     Optional<Pokemons> findByPokemonNumber(Long pokemonNumber);
+
+    Page<Pokemons> findByPokemonNumber(String number, Pageable pageable);
+
+
+
 }
