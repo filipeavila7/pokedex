@@ -111,12 +111,12 @@ public class PokemonService {
 
         Pokemons previous = repository
                 .findFirstByPokemonNumberLessThanOrderByPokemonNumberDesc(find.getPokemonNumber())
-                .orElse(null);
+                .orElseGet(() -> repository.findFirstByOrderByPokemonNumberDesc().orElse(null));
 
 
         Pokemons next = repository
                 .findFirstByPokemonNumberGreaterThanOrderByPokemonNumberAsc(find.getPokemonNumber())
-                .orElse(null);
+                .orElseGet(() -> repository.findFirstByOrderByPokemonNumberAsc().orElse(null));
 
         return toTypeResponse(find, weakness, previous, next);
 
