@@ -23,14 +23,19 @@ public class UploadService {
                 Files.createDirectories(uploadPath);
             }
 
-            // gera nome único
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            // pega o nome
+            String fileName = file.getOriginalFilename();
 
-            // resolve = “juntar caminho + nome do arquivo”
+            // Remove possíveis caminhos enviados pelo navegador
+            fileName = Paths.get(fileName).getFileName().toString();
+
             Path filePath = uploadPath.resolve(fileName);
 
-            // salva arquivo
-            Files.copy(file.getInputStream(), filePath);
+            Files.copy(
+                    file.getInputStream(),
+                    filePath,
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
 
             // retorna URL
             return "/uploads/" + fileName;
